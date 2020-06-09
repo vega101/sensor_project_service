@@ -17,21 +17,30 @@ const airPressureMetricSchema = new Schema(metricModel);
 const tempratureMetric = mongoose.model('tempratureMetrics', tempratureMetricSchema);
 const airPressureMetric = mongoose.model('airPressureMetrics', tempratureMetricSchema);
 
-exports.createMetric = (metricData) => {
+exports.createMetric = async (metricData) => {
+   
+    const updateData = await updateDb(metricData);
+    return updateData;
 
-    metricData.forEach(item => {
+};
+
+async function updateDb(metricData){
+    var responses = [];
+
+    for (var i = 0; i < metricData.length; i++) {
+        var item = metricData[i];
         var metric = null;
 
         if (Number(item.metricType) === 1){
             metric = new tempratureMetric(item);
-            return metric.save();
+            
         } else if (Number(item.metricType) === 2){
-            metric = new airPressureMetric(item);
-            return metric.save();
+            metric = new airPressureMetric(item);           
         }
 
+        var metricResponse = await metric.save();
+        responses.push({id: metricResponse._id});
+    }
 
-    });
-
-
-};
+    return responses;
+}
