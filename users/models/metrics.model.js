@@ -29,9 +29,10 @@ exports.createMetric = async (metricData) => {
 async function updateDb(metricData){
     var responses = [];
 
-    for (var i = 0; i < metricData.length; i++) {
-        var item = metricData[i];
+    for (item of metricData) {       
         var metric = null;
+
+        item.date = new Date(Number(item.date) * 1000);
 
         if (Number(item.metricType) === 1){
             metric = new tempratureMetric(item);            
