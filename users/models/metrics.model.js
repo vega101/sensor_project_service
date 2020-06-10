@@ -12,10 +12,12 @@ const metricModel = {
 }
 
 const tempratureMetricSchema = new Schema(metricModel);
-const airPressureMetricSchema = new Schema(metricModel);
+const pressureMetricSchema = new Schema(metricModel);
+const humidityMetricSchema = new Schema(metricModel);
 
 const tempratureMetric = mongoose.model('tempratureMetrics', tempratureMetricSchema);
-const airPressureMetric = mongoose.model('airPressureMetrics', tempratureMetricSchema);
+const pressureMetric = mongoose.model('pressureMetrics', pressureMetricSchema);
+const humidityMetric = mongoose.model('humidityMetrics', humidityMetricSchema);
 
 exports.createMetric = async (metricData) => {
    
@@ -32,10 +34,11 @@ async function updateDb(metricData){
         var metric = null;
 
         if (Number(item.metricType) === 1){
-            metric = new tempratureMetric(item);
-            
+            metric = new tempratureMetric(item);            
         } else if (Number(item.metricType) === 2){
-            metric = new airPressureMetric(item);           
+            metric = new pressureMetric(item);           
+        }else if (Number(item.metricType) === 3){
+            metric = new humidityMetric(item);           
         }
 
         var metricResponse = await metric.save();
