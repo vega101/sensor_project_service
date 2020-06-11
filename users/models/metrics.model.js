@@ -26,6 +26,21 @@ exports.createMetric = async (metricData) => {
 
 };
 
+exports.list = (perPage, page) => {
+    return new Promise((resolve, reject) => {
+        tempratureMetric.find()
+            .limit(perPage)
+            .skip(perPage * page)
+            .exec(function (err, users) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(users);
+                }
+            })
+    });
+};
+
 async function updateDb(metricData){
     var responses = [];
 

@@ -40,6 +40,10 @@ exports.routesConfig = function (app) {
         MetricsController.insert
     ]);
 
+    app.get('/getMetrics', [       
+        MetricsController.list
+    ]);
+
     app.post('/hello', function (req, res) {
         res.send('hello');
     })
