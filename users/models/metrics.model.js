@@ -1,5 +1,4 @@
-const mongoose = require('../common/services/mongoose.service').mongoose;
-const enums = require('../common/enums/enum');
+const mongoose = require('../../common/services/mongoose.service').mongoose;
 const Schema = mongoose.Schema;
 
 //might want to crate separate schemas for temprature, pressure & other readings
@@ -15,12 +14,10 @@ const metricModel = {
 const tempratureMetricSchema = new Schema(metricModel);
 const pressureMetricSchema = new Schema(metricModel);
 const humidityMetricSchema = new Schema(metricModel);
-const lightMetricSchema = new Schema(metricModel);
 
 const tempratureMetric = mongoose.model('tempratureMetrics', tempratureMetricSchema);
 const pressureMetric = mongoose.model('pressureMetrics', pressureMetricSchema);
 const humidityMetric = mongoose.model('humidityMetrics', humidityMetricSchema);
-const lightMetric = mongoose.model('lightMetrics', lightMetricSchema);
 
 exports.createMetric = async (metricData) => {
    
@@ -52,14 +49,12 @@ async function updateDb(metricData){
 
         item.date = new Date(Number(item.date) * 1000);
 
-        if (Number(item.metricType) === enums.metricTypes.temprature){
+        if (Number(item.metricType) === 1){
             metric = new tempratureMetric(item);            
-        } else if (Number(item.metricType) === enums.metricTypes.pressure){
+        } else if (Number(item.metricType) === 2){
             metric = new pressureMetric(item);           
-        } else if (Number(item.metricType) === enums.metricTypes.humidity){
+        }else if (Number(item.metricType) === 3){
             metric = new humidityMetric(item);           
-        } else if (Number(item.metricType) === enums.metricTypes.light){
-            metric = new lightMetric(item);           
         }
 
         var metricResponse = await metric.save();
