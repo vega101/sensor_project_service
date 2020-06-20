@@ -1,5 +1,4 @@
 const UsersController = require('./controllers/users.controller');
-const MetricsController = require('./controllers/metrics.controller');
 const PermissionMiddleware = require('../common/middlewares/auth.permission.middleware');
 const ValidationMiddleware = require('../common/middlewares/auth.validation.middleware');
 const config = require('../common/config/env.config');
@@ -35,17 +34,5 @@ exports.routesConfig = function (app) {
         UsersController.removeById
     ]);
 
-    //metrics
-    app.post('/createMetric', [
-        MetricsController.insert
-    ]);
-
-    app.get('/getMetrics', [       
-        MetricsController.list
-    ]);
-
-    app.post('/hello', function (req, res) {
-        res.send('hello');
-    })
 
 };

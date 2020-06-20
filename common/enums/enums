@@ -1,0 +1,6 @@
+const metricTypes = {
+    temprature: 1,
+    pressure: 2,
+    humidity: 3,
+    light: 4
+}
