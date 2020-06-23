@@ -29,20 +29,81 @@ exports.createMetric = async (metricData) => {
 
 };
 
-exports.list = (perPage, page) => {
+exports.list = (perPage, page, metricType, data) => {
     return new Promise((resolve, reject) => {
-        tempratureMetric.find()
-            .limit(perPage)
-            .skip(perPage * page)
-            .exec(function (err, users) {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(users);
-                }
-            })
+        let metric;
+        let filter = data.filters;
+        let sort = data.sort;
+
+        switch (metricType){
+            case enums.metricTypes.temprature:
+                metric = tempratureMetric;
+                break;
+            case enums.metricTypes.pressure:
+                metric = pressureMetric;
+                break;
+            case enums.metricTypes.humidity:
+                metric = humidityMetric;
+                break;
+            case enums.metricTypes.light:
+                metric = lightMetric;
+                break;
+            default:
+                metric = tempratureMetric;
+                break;
+
+        }
+        
+        if (validateFilter(filter)) {
+
+        }
+
+        metric.find({
+            $and: [{value: 25.1}, {location: 'Living Room'}]
+        })
+        .limit(perPage)
+        .skip(perPage * page)
+        .exec(function (err, users) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(users);
+            }
+        })
+
     });
 };
+
+function validateFilter(filters) {
+     
+    if (Array.isArray(filters) && filters.length) {
+        
+        let isValid = true;
+        for (f of filters){
+            let isValidFilter = validateFilterItem(f);
+            if (!isValidFilter){
+                isValid = false;
+                break;
+            }
+        }
+
+        return isValid;
+
+    } else {
+        return false;
+    }
+
+    function validateFilterItem(fi){
+        var isValid = false;
+        if (Object.keys(fi).length === 1) {
+            let prop = Object.keys(obj)[0];
+            if (metricModel.hasOwnProperty(prop)) {
+                isValid = true;
+            }
+        } 
+        return isValid;
+    }
+}
 
 async function updateDb(metricData){
     var responses = [];
