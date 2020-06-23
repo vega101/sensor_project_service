@@ -54,7 +54,11 @@ exports.list = (perPage, page, metricType, data) => {
 
         }
         
-        if (validateFilter(filter)) {
+        if (validateQueryObj(filter, 'filter')) {
+
+        }
+
+        if (validateQueryObj(sort, 'sort')) {
 
         }
 
@@ -74,14 +78,14 @@ exports.list = (perPage, page, metricType, data) => {
     });
 };
 
-function validateFilter(filters) {
+function validateQueryObj(filters, type) {
      
     if (Array.isArray(filters) && filters.length) {
         
         let isValid = true;
         for (f of filters){
-            let isValidFilter = validateFilterItem(f);
-            if (!isValidFilter){
+            let isValidItem = validateQueryItem(f, type);
+            if (!isValidItem){
                 isValid = false;
                 break;
             }
@@ -93,12 +97,19 @@ function validateFilter(filters) {
         return false;
     }
 
-    function validateFilterItem(fi){
+    function validateQueryItem(fi, type){
         var isValid = false;
         if (Object.keys(fi).length === 1) {
-            let prop = Object.keys(obj)[0];
+            let prop = Object.keys(fi)[0];
             if (metricModel.hasOwnProperty(prop)) {
-                isValid = true;
+                if (type === 'sort') {
+                    if (fi[prop] === 1 || fi[prop] === -1) {
+                        isValid = true;
+                    }
+                } else {
+                    isValid = true;
+                }
+                
             }
         } 
         return isValid;
