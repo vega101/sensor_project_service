@@ -32,8 +32,8 @@ exports.createMetric = async (metricData) => {
 exports.list = (perPage, page, metricType, data) => {
     return new Promise((resolve, reject) => {
         let metric;
-        let filter = data.filters;
-        let sort = data.sort;
+        let filter = data.filters; //array
+        let sort = data.sort; //object
 
         switch (metricType){
             case enums.metricTypes.temprature:
@@ -54,20 +54,26 @@ exports.list = (perPage, page, metricType, data) => {
 
         }
         
-        if (validateQueryObj(filter, 'filter')) {
+        let  dbQuery = metric.find({})
 
+        if (validateQueryObj(filter)) {
+            dbQuery = metric.find({
+                $and: filter
+            })
         }
 
-        if (validateQueryObj(sort, 'sort')) {
-
+        if (validateSortObj(sort)) { 
+            dbQuery.sort(sort)
         }
 
-        metric.find({
-            $and: [{value: 25.1}, {location: 'Living Room'}]
-        })
-        .limit(perPage)
-        .skip(perPage * page)
-        .exec(function (err, users) {
+        // metric.find({
+        //     $and: [{value: 25.1}, {location: 'Living Room'}]
+        // })
+
+        //metric.find({})
+        dbQuery.limit(perPage);
+        dbQuery.skip(perPage * page);
+        dbQuery.exec(function (err, users) {
             if (err) {
                 reject(err);
             } else {
@@ -78,13 +84,35 @@ exports.list = (perPage, page, metricType, data) => {
     });
 };
 
-function validateQueryObj(filters, type) {
+function validateSortObj(sortObj){
+    if (sortObj && typeof sortObj === 'object') {
+        let isValid = true;
+        for (var prop in sortObj) {
+            if (!metricModel.hasOwnProperty(prop)) {
+                isValid = false;
+                break;               
+            } else {
+                if (sortObj[prop] !== 1 || sortObj[prop] !== -1){
+                    isValid = false;
+                    break;  
+                }
+            }
+        }
+        
+        return isValid;
+
+    } else {
+        return false;
+    }
+}
+
+function validateQueryObj(filters) {
      
     if (Array.isArray(filters) && filters.length) {
         
         let isValid = true;
         for (f of filters){
-            let isValidItem = validateQueryItem(f, type);
+            let isValidItem = validateQueryItem(f);
             if (!isValidItem){
                 isValid = false;
                 break;
@@ -97,19 +125,12 @@ function validateQueryObj(filters, type) {
         return false;
     }
 
-    function validateQueryItem(fi, type){
+    function validateQueryItem(fi){
         var isValid = false;
         if (Object.keys(fi).length === 1) {
             let prop = Object.keys(fi)[0];
             if (metricModel.hasOwnProperty(prop)) {
-                if (type === 'sort') {
-                    if (fi[prop] === 1 || fi[prop] === -1) {
-                        isValid = true;
-                    }
-                } else {
-                    isValid = true;
-                }
-                
+                isValid = true;               
             }
         } 
         return isValid;
