@@ -1,13 +1,16 @@
 const mongoose = require('../../common/services/mongoose.service').mongoose;
 const enums = require('../../common/enums/enums');
+const validationHelpers = require('../../common/validation/validationHelpers');
+const StationModel = require('../../stations/models/stations.model');
+
 const Schema = mongoose.Schema;
 
-//might want to crate separate schemas for temprature, pressure & other readings
+const metricModelSchema = ['stationId', 'value', 'metricType'];
+const gridSchema = ['locationName', 'stationName', 'metricType', 'dateCreated', 'value'];
 
 const metricModel = {
-    stationId: Number,
-    location:  String,
-    date: Number,
+    station: Object,
+    dateCreated: Date,
     value: Number,
     metricType: Number
 }
@@ -24,9 +27,30 @@ const lightMetric = mongoose.model('lightMetrics', lightMetricSchema);
 
 exports.createMetric = async (metricData) => {
    
-    const updateData = await updateDb(metricData);
-    return updateData;
+    validationHelpers.validateRequestData(metricData, metricModelSchema);
 
+    let validData = metricData.filter(item => {
+        return item.isValid;
+    });
+
+    if (validData.length){
+        let stationId = validData[0].stationId;
+        let station = await StationModel.getStationById(stationId); //to do - get this from stations.model
+
+        validData = validData.map(item => {
+            return {
+                station: station,
+                date: item.date,
+                value: item.value,
+                metricType: item.metricType
+            }
+        })
+    
+        const updateData = await updateDb(validData);
+        return updateData;
+
+    }
+    
 };
 
 exports.list = (perPage, page, metricType, data) => {
@@ -56,13 +80,13 @@ exports.list = (perPage, page, metricType, data) => {
         
         let  dbQuery = metric.find({})
 
-        if (validateQueryObj(filter)) {
+        if (validationHelpers.validateQueryObj(filter, gridSchema)) {
             dbQuery = metric.find({
                 $and: filter
             })
         }
 
-        if (validateSortObj(sort)) { 
+        if (validationHelpers.validateSortObj(sort, gridSchema)) { 
             dbQuery.sort(sort)
         }
 
@@ -70,7 +94,6 @@ exports.list = (perPage, page, metricType, data) => {
         //     $and: [{value: 25.1}, {location: 'Living Room'}]
         // })
 
-        //metric.find({})
         dbQuery.limit(perPage);
         dbQuery.skip(perPage * page);
         dbQuery.exec(function (err, users) {
@@ -84,58 +107,7 @@ exports.list = (perPage, page, metricType, data) => {
     });
 };
 
-function validateSortObj(sortObj){
-    if (sortObj && typeof sortObj === 'object') {
-        let isValid = true;
-        for (var prop in sortObj) {
-            if (!metricModel.hasOwnProperty(prop)) {
-                isValid = false;
-                break;               
-            } else {
-                if (sortObj[prop] !== 1 || sortObj[prop] !== -1){
-                    isValid = false;
-                    break;  
-                }
-            }
-        }
-        
-        return isValid;
 
-    } else {
-        return false;
-    }
-}
-
-function validateQueryObj(filters) {
-     
-    if (Array.isArray(filters) && filters.length) {
-        
-        let isValid = true;
-        for (f of filters){
-            let isValidItem = validateQueryItem(f);
-            if (!isValidItem){
-                isValid = false;
-                break;
-            }
-        }
-
-        return isValid;
-
-    } else {
-        return false;
-    }
-
-    function validateQueryItem(fi){
-        var isValid = false;
-        if (Object.keys(fi).length === 1) {
-            let prop = Object.keys(fi)[0];
-            if (metricModel.hasOwnProperty(prop)) {
-                isValid = true;               
-            }
-        } 
-        return isValid;
-    }
-}
 
 async function updateDb(metricData){
     var responses = [];
@@ -143,7 +115,7 @@ async function updateDb(metricData){
     for (item of metricData) {       
         var metric = null;
 
-        item.date = new Date(Number(item.date) * 1000);
+        item.dateCreated = new Date();
 
         if (Number(item.metricType) === enums.metricTypes.temprature){
             metric = new tempratureMetric(item);            

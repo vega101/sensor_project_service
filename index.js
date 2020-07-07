@@ -7,6 +7,8 @@ const bodyParser = require('body-parser');
 const AuthorizationRouter = require('./authorization/routes.config');
 const UsersRouter = require('./users/routes.config');
 const MetricsRouter = require('./metrics/routes.config');
+const StationsRouter = require('./stations/routes.config');
+const LocationsRouter = require('./locations/routes.config');
 
 app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -25,6 +27,8 @@ app.use(bodyParser.json());
 AuthorizationRouter.routesConfig(app);
 UsersRouter.routesConfig(app);
 MetricsRouter.routesConfig(app);
+StationsRouter.routesConfig(app);
+LocationsRouter.routesConfig(app);
 
 app.listen(config.port, function () {
     console.log('app listening at port %s', config.port);
