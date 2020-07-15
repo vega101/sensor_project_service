@@ -1,0 +1,9 @@
+{
+  "apps" : [{
+    "name"        : "sensor_project",
+    "script"      : "./index.js",
+    "watch"       : true,
+    "exec_interpreter" : "babel-node",
+    "exec_mode"        : "fork"
+  }]
+}
