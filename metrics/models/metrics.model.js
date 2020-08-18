@@ -5,12 +5,13 @@ const StationModel = require('../../stations/models/stations.model');
 
 const Schema = mongoose.Schema;
 
-const metricModelSchema = ['stationId', 'value', 'metricType'];
+const metricModelSchema = ['stationId', 'value', 'metricType', 'date'];
 const gridSchema = ['locationName', 'stationName', 'metricType', 'dateCreated', 'value'];
 
 const metricModel = {
     station: Object,
     dateCreated: Date,
+    metricDate: Date,
     value: Number,
     metricType: Number
 }
@@ -40,7 +41,7 @@ exports.createMetric = async (metricData) => {
         validData = validData.map(item => {
             return {
                 station: station,
-                date: item.date,
+                metricDate: new Date(item.date * 1000),
                 value: item.value,
                 metricType: item.metricType
             }
