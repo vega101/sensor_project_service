@@ -41,7 +41,8 @@ exports.createMetric = async (metricData) => {
         validData = validData.map(item => {
             return {
                 station: station,
-                metricDate: new Date(item.date * 1000),
+                //metricDate: new Date(item.date * 1000),
+                metricDate: new Date(item.date.year, item.date.month, item.date.day, item.date.hours, item.date.minutes, item.date.seconds, 0),
                 value: item.value,
                 metricType: item.metricType
             }
