@@ -109,7 +109,11 @@ exports.list = (perPage, page, metricType, data) => {
     });
 };
 
+exports.tempratureMetric = tempratureMetric;
 
+exports.humidityMetric = humidityMetric;
+
+exports.metricModel = metricModel;
 
 async function updateDb(metricData){
     var responses = [];

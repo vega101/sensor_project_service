@@ -4,3 +4,31 @@ mongod.exe
 
 npm run devstart
 
+
+
+to get running locally
+
+run mongod.exe in
+CD C:\Program Files\MongoDB\Server\4.2\bin
+
+
+env.config.js
+change to
+"port": 3600, //3600
+"appEndpoint": "http://localhost:3600", //http://localhost:3600
+"apiEndpoint": "http://localhost:3600", //http://localhost:3600
+
+mongoose.service.js
+remove
+    user: 'mongoadmin',
+    pass: 'mongoadmin',
+    authSource: 'admin'
+
+if debugger is not attached, then see this article
+
+https://code.visualstudio.com/docs/nodejs/nodejs-debugging
+
+
+
+
+
