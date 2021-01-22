@@ -45,8 +45,10 @@ const options = {
     bufferMaxEntries: 0,
     //geting rid off the depreciation errors
     useNewUrlParser: true,
-    useUnifiedTopology: true
-    
+    useUnifiedTopology: true,
+    user: 'mongoadmin',
+    pass: 'mongoadmin',
+    authSource: 'admin'
 };
 const connectWithRetry = () => {
     console.log('MongoDB connection with retry')
