@@ -76,10 +76,10 @@ function getDataGroupedByHour(data) {
     let results = [];
 
     let grouped = groupBy(data, item => item.dateCreated.getFullYear() + "-" + item.dateCreated.getMonth() + "-" + item.dateCreated.getDate() + "-" + item.dateCreated.getHours());
-
+    
     grouped.forEach(item => {
         item.sort((a, b) => b.dateCreated - a.dateCreated);
-        results.push({date: item[0].dateCreated, value: item[0].value});
+        results.push({date: Math.floor(item[0].dateCreated.getTime() / 1000), value: item[0].value});
     })
 
     return results;
@@ -92,8 +92,8 @@ function getHighLowDataGroupedByDay(data) {
 
     grouped.forEach(item => {
         item.sort((a, b) => b.value - a.value);
-        results.low.push({date: item[0].dateCreated, value: item[0].value});
-        results.high.push({date: item[item.length - 1].dateCreated, value: item[0].value});
+        results.low.push({date: Math.floor(item[0].dateCreated.getTime() / 1000), value: item[0].value});
+        results.high.push({date: Math.floor(item[item.length - 1].dateCreated.getTime() / 1000), value: item[0].value});
     })
 
     return results;
