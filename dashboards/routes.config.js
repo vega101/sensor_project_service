@@ -6,4 +6,8 @@ exports.routesConfig = function (app) {
         DashboardController.getCurrentObservations
     ]);
 
+    app.get('/getTest', [       
+        DashboardController.getTest
+    ]);
+
 };
