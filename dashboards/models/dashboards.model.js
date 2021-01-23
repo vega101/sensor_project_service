@@ -67,8 +67,8 @@ async function getHumidity24Results(fromDate24Hours) {
 }
 
 async function getHighLowHumidity7Results(fromDate7Days) {
-    let temperatureData =  await humidityMetric.find({"dateCreated" : { $gte : fromDate7Days }});   
-    let results = getHighLowDataGroupedByDay(temperatureData);
+    let humidityData =  await humidityMetric.find({"dateCreated" : { $gte : fromDate7Days }});   
+    let results = getHighLowDataGroupedByDay(humidityData);
     return results;
 }
 
@@ -78,7 +78,7 @@ function getDataGroupedByHour(data) {
     let grouped = groupBy(data, item => item.dateCreated.getFullYear() + "-" + item.dateCreated.getMonth() + "-" + item.dateCreated.getDate() + "-" + item.dateCreated.getHours());
     
     grouped.forEach(item => {
-        item.sort((a, b) => b.dateCreated - a.dateCreated);
+        item.sort((a, b) => a.dateCreated - b.dateCreated);
         results.push({date: Math.floor(item[0].dateCreated.getTime() / 1000), value: item[0].value});
     })
 
@@ -90,11 +90,18 @@ function getHighLowDataGroupedByDay(data) {
 
     let grouped = groupBy(data, item => item.dateCreated.getFullYear() + "-" + item.dateCreated.getMonth() + "-" + item.dateCreated.getDate());
 
-    grouped.forEach(item => {
-        item.sort((a, b) => b.value - a.value);
-        results.low.push({date: Math.floor(item[0].dateCreated.getTime() / 1000), value: item[0].value});
-        results.high.push({date: Math.floor(item[item.length - 1].dateCreated.getTime() / 1000), value: item[item.length - 1].value});
-    })
+    for (let groupItem of grouped.keys()) {
+        let values = grouped.get(groupItem);
+        values.sort((a, b) => a.value - b.value);
+        results.low.push({date: groupItem, value: values[0].value});
+        results.high.push({date: groupItem, value: values[values.length - 1].value});
+    }
+
+    // grouped.forEach(item => {
+    //     item.sort((a, b) => b.value - a.value);
+    //     results.high.push({date: item[0].key, value: item[0].value});
+    //     results.low.push({date: item[item.length - 1].key, value: item[item.length - 1].value});
+    // })
 
     return results;
 }
