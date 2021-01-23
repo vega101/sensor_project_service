@@ -93,7 +93,7 @@ function getHighLowDataGroupedByDay(data) {
     grouped.forEach(item => {
         item.sort((a, b) => b.value - a.value);
         results.low.push({date: Math.floor(item[0].dateCreated.getTime() / 1000), value: item[0].value});
-        results.high.push({date: Math.floor(item[item.length - 1].dateCreated.getTime() / 1000), value: item[0].value});
+        results.high.push({date: Math.floor(item[item.length - 1].dateCreated.getTime() / 1000), value: item[item.length - 1].value});
     })
 
     return results;
