@@ -51,6 +51,8 @@ const options = {
     authSource: 'admin'
 };
 const connectWithRetry = () => {
+    //remote db: mongodb://mongoadmin:mongoadmin@ec2-3-128-213-177.us-east-2.compute.amazonaws.com:27017/sensor_project
+    //local: mongodb://localhost:27017/sensor_project
     console.log('MongoDB connection with retry')
     mongoose.connect("mongodb://localhost:27017/sensor_project", options).then(()=>{
         console.log('MongoDB is connected')
